@@ -1,25 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbzgKuoKJfbO2tBKbCwp1hGCwNLES4zMNoOSk5XOe-oAFryIJ8XO4CRsMIxLg1lntfZl/exec">
-    <title>Cargando Formulario...</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #ffffff;
-        }
-    </style>
-</head>
-<body>
-    <p>Cargando formulario, por favor espere...</p>
-    <script>
-        window.location.href = "https://script.google.com/macros/s/AKfycbzvW9WYxvkWp54Y516VJQDGIh3Dx9HLEfUjAds6RicOwxdU5Uli2ml-89ITo9xqQGRo/exec";
-    </script>
-</body>
-</html>
+<script>
+// Cambia "formulario-humanitario" por el ID real que tenga tu etiqueta <form>
+document.getElementById("formulario-humanitario").addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    // Mapea aquí los inputs de tu formulario
+    var datosFormulario = {
+        campo1: document.getElementById("tu_input_1").value,
+        campo2: document.getElementById("tu_input_2").value
+        // Agrega los campos que necesites...
+    };
+
+    // Envío invisible hacia tu nueva URL de Google Sheets
+    fetch("https://script.google.com/macros/s/AKfycbwqIaagHCKRojnMJBR0PUa2m4BfaZTDhgCu6rBxlfDBomQZ2tLY-k2GnsKnO4VHNq2A/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datosFormulario)
+    })
+    .then(() => {
+        alert("¡Registro enviado con éxito!");
+        document.getElementById("formulario-humanitario").reset(); // Limpia el formulario
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
+});
+</script>
