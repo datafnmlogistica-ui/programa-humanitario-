@@ -10,10 +10,10 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background-color: #121212; /* Color oscuro de tu formulario */
+            background-color: #121212; /* El fondo oscuro de tu app */
         }
         
-        /* Caja contenedor que recorta los excesos */
+        /* Contenedor que recorta la barra de Google */
         .contenedor-blindado {
             position: absolute;
             top: 0;
@@ -23,13 +23,13 @@
             overflow: hidden;
         }
 
-        /* Subimos el formulario con fuerza para sacar la barra gris de la pantalla */
+        /* Medida exacta: Oculta la barra gris sin recortar tu diseño */
         iframe {
             position: absolute;
-            top: -70px; /* Subida más agresiva para enterrar la barra de abuso */
+            top: -46px; 
             left: 0;
             width: 100%;
-            height: calc(100% + 70px); /* Compensamos el tamaño para que no quede un hueco abajo */
+            height: calc(100% + 46px); 
             border: none;
         }
     </style>
