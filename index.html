@@ -10,10 +10,8 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background-color: #121212; /* El fondo oscuro de tu app */
+            background-color: #121212;
         }
-        
-        /* Contenedor que recorta la barra de Google */
         .contenedor-blindado {
             position: absolute;
             top: 0;
@@ -22,23 +20,19 @@
             height: 100%;
             overflow: hidden;
         }
-
-        /* Medida exacta: Oculta la barra gris sin recortar tu diseño */
         iframe {
             position: absolute;
-            top: -46px; 
+            top: -50px; /* Esconde la barra gris de abuso */
             left: 0;
             width: 100%;
-            height: calc(100% + 46px); 
+            height: calc(100% + 50px); 
             border: none;
         }
     </style>
 </head>
 <body>
-
     <div class="contenedor-blindado">
-        <iframe src="https://script.google.com/macros/s/AKfycbwqIaagHCKRojnMJBR0PUa2m4BfaZTDhgCu6rBxlfDBomQZ2tLY-k2GnsKnO4VHNq2A/exec"></iframe>
+        <iframe src="PEGA_AQUÍ_TU_NUEVA_URL_DE_GOOGLE"></iframe>
     </div>
-
 </body>
 </html>
