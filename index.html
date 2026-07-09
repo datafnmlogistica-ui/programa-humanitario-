@@ -3,99 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programa Humanitario</title>
+    <title>PROGRAMA HUMANITARIO FUNDACION NUEVO MUNDO</title>
     <style>
-        /* Estilos para que se vea limpio y profesional */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
+        /* Forzamos a que la página ocupe toda la pantalla sin barras de desplazamiento externas */
+        body, html {
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #121212; /* Mismo color oscuro de tu diseño */
         }
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        
+        /* Contenedor inteligente: Recorta los bordes para esconder la barra de Google */
+        .contenedor-oculto {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 500px;
+            height: 100%;
+            overflow: hidden;
         }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
-        input, select, textarea {
+
+        /* Subimos el iframe exactamente 46px hacia arriba para sacar la barra gris de la pantalla */
+        iframe {
+            position: absolute;
+            top: -46px; 
+            left: 0;
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            background-color: #28a745;
-            color: white;
-            padding: 12px;
+            /* Compensamos los 46px abajo para que el formulario no quede recortado al fondo */
+            height: calc(100% + 46px); 
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 25px;
         }
-        button:hover { background-color: #218838; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Registro Programa Humanitario</h2>
-    
-    <form id="formulario-humanitario">
-        <label for="nombre">Nombre Completo:</label>
-        <input type="text" id="nombre" required placeholder="Escribe tu nombre">
-
-        <label for="documento">Documento de Identidad:</label>
-        <input type="text" id="documento" required placeholder="Número de documento">
-
-        <label for="telefono">Teléfono de Contacto:</label>
-        <input type="tel" id="telefono" required placeholder="Ej: +57 300...">
-
-        <button type="submit">Enviar Registro</button>
-    </form>
-</div>
-
-<script>
-document.getElementById("formulario-humanitario").addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    // Aquí guardamos las respuestas de los cuadros de texto
-    var datosFormulario = {
-        campo1: document.getElementById("nombre").value,
-        campo2: document.getElementById("documento").value,
-        campo3: document.getElementById("telefono").value
-    };
-
-    // Envío en secreto a tu nueva URL de Google Apps Script
-    fetch("https://script.google.com/macros/s/AKfycbwqIaagHCKRojnMJBR0PUa2m4BfaZTDhgCu6rBxlfDBomQZ2tLY-k2GnsKnO4VHNq2A/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datosFormulario)
-    })
-    .then(() => {
-        alert("¡Tu registro ha sido enviado con éxito y de forma segura!");
-        document.getElementById("formulario-humanitario").reset();
-    })
-    .catch((error) => {
-        alert("Hubo un error al enviar, por favor intenta de nuevo.");
-        console.error("Error:", error);
-    });
-});
-</script>
+    <div class="contenedor-oculto">
+        <iframe src="https://script.google.com/macros/s/AKfycbwqIaagHCKRojnMJBR0PUa2m4BfaZTDhgCu6rBxlfDBomQZ2tLY-k2GnsKnO4VHNq2A/exec"></iframe>
+    </div>
 
 </body>
 </html>
