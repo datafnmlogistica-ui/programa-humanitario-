@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROGRAMA HUMANITARIO FUNDACION NUEVO MUNDO</title>
     <style>
-        /* Forzamos a que la página ocupe toda la pantalla sin barras de desplazamiento externas */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background-color: #121212; /* Mismo color oscuro de tu diseño */
+            background-color: #121212; /* Color oscuro de tu formulario */
         }
         
-        /* Contenedor inteligente: Recorta los bordes para esconder la barra de Google */
-        .contenedor-oculto {
+        /* Caja contenedor que recorta los excesos */
+        .contenedor-blindado {
             position: absolute;
             top: 0;
             left: 0;
@@ -24,21 +23,20 @@
             overflow: hidden;
         }
 
-        /* Subimos el iframe exactamente 46px hacia arriba para sacar la barra gris de la pantalla */
+        /* Subimos el formulario con fuerza para sacar la barra gris de la pantalla */
         iframe {
             position: absolute;
-            top: -46px; 
+            top: -70px; /* Subida más agresiva para enterrar la barra de abuso */
             left: 0;
             width: 100%;
-            /* Compensamos los 46px abajo para que el formulario no quede recortado al fondo */
-            height: calc(100% + 46px); 
+            height: calc(100% + 70px); /* Compensamos el tamaño para que no quede un hueco abajo */
             border: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="contenedor-oculto">
+    <div class="contenedor-blindado">
         <iframe src="https://script.google.com/macros/s/AKfycbwqIaagHCKRojnMJBR0PUa2m4BfaZTDhgCu6rBxlfDBomQZ2tLY-k2GnsKnO4VHNq2A/exec"></iframe>
     </div>
 
