@@ -10,10 +10,10 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background-color: #121212; /* Fondo oscuro que hace juego con tu diseño neón */
+            background-color: #121212; /* Fondo oscuro neón */
         }
         
-        /* Contenedor seguro que oculta la barra de abuso */
+        /* Contenedor seguro que esconde la franja de Google */
         .contenedor-seguro {
             position: absolute;
             top: 0;
@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Desplaza el formulario hacia arriba para sacar la franja de Google del área visible */
+        /* Subimos el iframe para ocultar la barra, pero agregamos un padding interno */
         iframe {
             position: absolute;
             top: -48px; 
@@ -31,6 +31,10 @@
             width: 100%;
             height: calc(100% + 48px); 
             border: none;
+            /* Empuja el contenido real de tu formulario 48px hacia abajo, */
+            /* compensando exactamente la subida para que nada se corte */
+            padding-top: 48px;
+            box-sizing: border-box;
         }
     </style>
 </head>
