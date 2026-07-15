@@ -10,37 +10,29 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background-color: #121212; /* Fondo oscuro neón */
+            background-color: #121212; /* Fondo oscuro */
         }
         
-        /* Contenedor seguro que esconde la franja de Google */
-        .contenedor-seguro {
+        /* Contenedor que ocupa toda la pantalla */
+        .contenedor-formulario {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
         }
 
-        /* Subimos el iframe para ocultar la barra, pero agregamos un padding interno */
+        /* El formulario se muestra al 100% de su tamaño real, sin recortes */
         iframe {
-            position: absolute;
-            top: -48px; 
-            left: 0;
             width: 100%;
-            height: calc(100% + 48px); 
+            height: 100%;
             border: none;
-            /* Empuja el contenido real de tu formulario 48px hacia abajo, */
-            /* compensando exactamente la subida para que nada se corte */
-            padding-top: 48px;
-            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
-    <div class="contenedor-seguro">
+    <div class="contenedor-formulario">
         <iframe src="https://script.google.com/macros/s/AKfycbyZfdz2l638Mxl85nDioIQxrwet4E4nqLcNLEDdf50FAHB1catY13OPKbQTHlbsnCS_/exec"></iframe>
     </div>
 
