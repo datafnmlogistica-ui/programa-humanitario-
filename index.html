@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <base target="_top">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROGRAMA HUMANITARIO FUNDACION NUEVO MUNDO</title>
     <style>
       body {
@@ -125,6 +125,11 @@
       }
       .uppercase-input {
         text-transform: uppercase;
+      }
+      .file-info {
+        font-size: 11px;
+        color: #FF6EC7;
+        margin-top: 5px;
       }
       .button-group {
         display: flex;
@@ -253,6 +258,22 @@
             <option value="">Primero verifique documento...</option>
           </select>
         </div>
+
+        <div class="input-group">
+          <label>VALOR DEL VOUCHER (Solo números - COP) <span class="req">*</span></label>
+          <input type="number" id="valorVoucher" placeholder="Ej: 50000" min="1" disabled required>
+        </div>
+
+        <div class="input-group">
+          <label>NÚMERO O REFERENCIA DE VOUCHER <span class="req">*</span></label>
+          <input type="text" id="refVoucher" placeholder="Ej: REF123456" disabled required>
+        </div>
+
+        <div class="input-group">
+          <label>SUBIR VOUCHER(S) (Imagen o PDF - Máx 10 archivos, 10MB c/u) <span class="req">*</span></label>
+          <input type="file" id="archivosVoucher" accept="image/*,application/pdf" multiple disabled required>
+          <div class="file-info">Máximo 10 archivos. Solo imágenes (.jpg, .png) o .pdf (Peso máx. 10MB cada uno).</div>
+        </div>
         
         <div class="button-group">
           <button type="button" id="btnRegistrar" class="btn-submit" onclick="enviarDatos()" disabled>Registrar</button>
@@ -265,29 +286,54 @@
 
     <script>
       var listaLideresGlobal = [];
-      // Reemplaza esta URL por tu URL de Google Apps Script real que termina en /exec
-      var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZfdz2l638Mxl85nDioIQxrwet4E4nqLcNLEDdf50FAHB1catY13OPKbQTHlbsnCS_/exec";
-
-      // --- TRADUCTOR CLAVE: Reemplaza a 'google.script.run' para conectar con Google Sheets ---
-      function ejecutarEnGoogle(action, payload, successCallback) {
-        fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({ action: action, payload: payload })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (successCallback) successCallback(data);
-        })
-        .catch(err => {
-          console.error("Error conectando con Google Sheets: ", err);
-        });
-      }
+      var archivosCargadosBase64 = []; // Guarda archivos temporalmente
 
       window.onload = function() {
-        ejecutarEnGoogle("obtenerLideres", {}, function(listaLideres) {
-          listaLideresGlobal = listaLideres;
-        });
+        google.script.run
+          .withSuccessHandler(function(listaLideres) {
+            listaLideresGlobal = listaLideres;
+          })
+          .obtenerLideres();
+
+        // Escuchar la carga de archivos
+        document.getElementById("archivosVoucher").addEventListener("change", procesarArchivos);
       };
+
+      // Procesa y valida los archivos de voucher
+      function procesarArchivos(e) {
+        archivosCargadosBase64 = [];
+        var files = e.target.files;
+        
+        if (files.length > 10) {
+          alert("No puede subir más de 10 archivos.");
+          e.target.value = "";
+          return;
+        }
+
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          
+          // Validación de peso (10MB = 10 * 1024 * 1024 bytes)
+          if (file.size > 10 * 1024 * 1024) {
+            alert("El archivo '" + file.name + "' supera el peso máximo permitido de 10MB.");
+            e.target.value = "";
+            archivosCargadosBase64 = [];
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onload = (function(f) {
+            return function(evt) {
+              archivosCargadosBase64.push({
+                nombre: f.name,
+                tipo: f.type,
+                data: evt.target.result
+              });
+            };
+          })(file);
+          reader.readAsDataURL(file);
+        }
+      }
 
       function verificarAntesDeLlenar() {
         var msgLado = document.getElementById("msg-verificacion-lado");
@@ -307,60 +353,73 @@
         msgLado.style.color = "#AAAAAA";
         msgLado.textContent = "Buscando...";
 
-        ejecutarEnGoogle("verificarDuplicado", { doc: doc }, function(resultado) {
-          var inputs = document.querySelectorAll("#registroForm input, #registroForm select");
-          
-          if (resultado.registrado) {
-            msgLado.className = "duplicado";
-            msgLado.textContent = "USTED YA SE ENCUENTRA REGISTRADO";
-
-            document.getElementById("documento").value = doc;
-            document.getElementById("nombre").value = resultado.datos.nombre;
-            document.getElementById("celular").value = resultado.datos.celular;
-            document.getElementById("telegram").value = resultado.datos.telegram;
-            document.getElementById("correo").value = resultado.datos.correo;
-            document.getElementById("pasaporte").value = resultado.datos.pasaporte;
-            document.getElementById("codigo_postal").value = resultado.datos.codigo_postal;
-            document.getElementById("ciudad").value = resultado.datos.ciudad;
-            document.getElementById("departamento").value = resultado.datos.departamento;
-            document.getElementById("pais").value = resultado.datos.pais;
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            var inputs = document.querySelectorAll("#registroForm input, #registroForm select");
             
-            var selectLider = document.getElementById("lider");
-            selectLider.innerHTML = `<option value="${resultado.datos.lider}">${resultado.datos.lider}</option>`;
+            if (resultado.registrado) {
+              msgLado.className = "duplicado";
+              msgLado.textContent = "USTED YA SE ENCUENTRA REGISTRADO";
 
-            inputs.forEach(input => input.disabled = true);
-            document.getElementById("btnRegistrar").disabled = true;
+              document.getElementById("documento").value = doc;
+              document.getElementById("nombre").value = resultado.datos.nombre;
+              document.getElementById("celular").value = resultado.datos.celular;
+              document.getElementById("telegram").value = resultado.datos.telegram;
+              document.getElementById("correo").value = resultado.datos.correo;
+              document.getElementById("pasaporte").value = resultado.datos.pasaporte;
+              document.getElementById("codigo_postal").value = resultado.datos.codigo_postal;
+              document.getElementById("ciudad").value = resultado.datos.ciudad;
+              document.getElementById("departamento").value = resultado.datos.departamento;
+              document.getElementById("pais").value = resultado.datos.pais;
+              document.getElementById("valorVoucher").value = resultado.datos.valorVoucher;
+              document.getElementById("refVoucher").value = resultado.datos.refVoucher;
+              
+              var selectLider = document.getElementById("lider");
+              selectLider.innerHTML = `<option value="${resultado.datos.lider}">${resultado.datos.lider}</option>`;
 
-          } else {
-            msgLado.className = "success";
-            msgLado.textContent = "✓ Libre para registrar.";
-            
-            document.getElementById("documento").value = doc;
-            inputs.forEach(input => {
-              if(input.id !== "documento") input.disabled = false;
-            });
+              // Mostrar que tiene archivos subidos de manera ilustrativa
+              document.getElementById("archivosVoucher").type = "text";
+              document.getElementById("archivosVoucher").value = "Voucher(s) subido(s) previamente.";
 
-            var selectLider = document.getElementById("lider");
-            selectLider.innerHTML = '<option value="">-- Seleccione un Líder --</option>';
-            listaLideresGlobal.forEach(function(lider) {
-              var opt = document.createElement("option");
-              opt.value = lider;
-              opt.textContent = lider;
-              selectLider.appendChild(opt);
-            });
+              inputs.forEach(input => input.disabled = true);
+              document.getElementById("btnRegistrar").disabled = true;
 
-            document.getElementById("btnRegistrar").disabled = false;
-          }
-        });
+            } else {
+              msgLado.className = "success";
+              msgLado.textContent = "✓ Libre para registrar.";
+              
+              document.getElementById("documento").value = doc;
+              document.getElementById("archivosVoucher").type = "file"; // reset type
+
+              inputs.forEach(input => {
+                if(input.id !== "documento") input.disabled = false;
+              });
+
+              var selectLider = document.getElementById("lider");
+              selectLider.innerHTML = '<option value="">-- Seleccione un Líder --</option>';
+              listaLideresGlobal.forEach(function(lider) {
+                var opt = document.createElement("option");
+                opt.value = lider;
+                opt.textContent = lider;
+                selectLider.appendChild(opt);
+              });
+
+              document.getElementById("btnRegistrar").disabled = false;
+            }
+          })
+          .verificarDuplicado(doc);
       }
 
       function reiniciarFormularioCompleto() {
         document.getElementById("registroForm").reset();
         document.getElementById("documentoVerificar").value = "";
         document.getElementById("documento").value = "";
+        archivosCargadosBase64 = [];
         
         document.getElementById("msg-verificacion-lado").textContent = "";
         document.getElementById("status-message-bottom").textContent = "";
+
+        document.getElementById("archivosVoucher").type = "file";
 
         var inputs = document.querySelectorAll("#registroForm input, #registroForm select");
         inputs.forEach(input => input.disabled = true);
@@ -375,7 +434,14 @@
       function enviarDatos() {
         var msgBottom = document.getElementById("status-message-bottom");
         msgBottom.className = "";
-        msgBottom.textContent = "Guardando inscripción...";
+        msgBottom.textContent = "Enviando datos y subiendo vouchers...";
+
+        // Validación de archivos obligatorios
+        if (archivosCargadosBase64.length === 0) {
+          msgBottom.className = "error";
+          msgBottom.textContent = "Por favor, cargue al menos un voucher válido (imagen o PDF).";
+          return;
+        }
 
         var datos = {
           nombre: document.getElementById("nombre").value.trim(),
@@ -388,19 +454,28 @@
           ciudad: document.getElementById("ciudad").value.trim(),
           departamento: document.getElementById("departamento").value.trim(),
           pais: document.getElementById("pais").value.trim(),
-          lider: document.getElementById("lider").value
+          lider: document.getElementById("lider").value,
+          valorVoucher: document.getElementById("valorVoucher").value.trim(),
+          refVoucher: document.getElementById("refVoucher").value.trim(),
+          archivos: archivosCargadosBase64
         };
 
-        ejecutarEnGoogle("guardarDesdeWeb", { datos: datos }, function(resultado) {
-          if (resultado.exito) {
-            msgBottom.className = "success";
-            msgBottom.textContent = resultado.mensaje;
-            setTimeout(reiniciarFormularioCompleto, 2500);
-          } else {
-            msgBottom.className = "error";
-            msgBottom.textContent = resultado.mensaje;
-          }
-        });
+        // Deshabilitar botón durante el proceso de subida
+        document.getElementById("btnRegistrar").disabled = true;
+
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            if (resultado.exito) {
+              msgBottom.className = "success";
+              msgBottom.textContent = resultado.mensaje;
+              setTimeout(reiniciarFormularioCompleto, 3000);
+            } else {
+              msgBottom.className = "error";
+              msgBottom.textContent = resultado.mensaje;
+              document.getElementById("btnRegistrar").disabled = false;
+            }
+          })
+          .guardarDesdeWeb(datos);
       }
     </script>
   </body>
